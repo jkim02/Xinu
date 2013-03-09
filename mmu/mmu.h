@@ -21,12 +21,12 @@
 
 struct mmu_L1_4k_desc {
     unsigned int type           : 2 ; //should always be 0b01
-    unsigned int IMP            : 3 ; //should always be 0
+    unsigned int SBZ            : 3 ; //should always be 0
 
     //need to set domain 0 to 0b01 to check the L2 table access permissions
     unsigned int domain         : 4 ; //should always be 0
 
-    unsigned int SBZ            : 1 ; //should always be 0
+    unsigned int IMP            : 1 ; //should always be 0
     unsigned int L2_base_addr   : 22; //level 2 table base address
 }; //should be 32 bits in size
 
@@ -63,11 +63,22 @@ struct mmu_L2_4k_desc {
 //memory page routines
 unsigned int alloc_page(); //allocates a single page in the page allocation table
 unsigned int alloc_page_align(unsigned int align); //allocates a page that is aligned to a certain number of pages
-void dealloc_page(unsigned int page);
-void * page_number_to_address(unsigned int page);
+void dealloc_page(unsigned int page); //frees a page to use
+void * page_number_to_address(unsigned int page); //gets the physical memory address from the page number
 
 //mmu mapping routines
-void fill_page_with_empty_L1_table(unsigned int page);
-void create_map(void * phys, void * virt);
+void fill_page_with_empty_L1_table(unsigned int page); //fills a page with empty L1 table
+void fill_page_with_empty_L2_table(unsigned int page); //fills a page with empty L2 table
+void create_map(void * phys, void * virt); //creates a mapping from virt->phys address
+void remove_map(void * virt); //removes the virtual address mapping
+void * get_phys_addr(void * virt); //does a software page walk to get the physcial address from a virtual one
+
+//mmu routines
+void * get_page_table_addr(); //gets the addr of the currently used page table
+void set_page_table_addr(void * table); //sets the addr of the page table to use
+void mmu_init(); //initializes the data for the mmu table
+void mmu_enable(); //enables the mmu
+void mmu_disable(); //disables the mmu
+bool mmu_is_enabled(); //determines if the mmu is enabled or not
 
 #endif
