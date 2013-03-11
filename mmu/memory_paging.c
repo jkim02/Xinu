@@ -108,6 +108,21 @@ void dealloc_page(unsigned int page) {
 }
 
 /**
+ * Deallocates a group of pages that are contiguous in physical memory
+ *
+ * @param page the base page number to start freeing from
+ * @param amount the amount of pages to free
+ */
+void dealloc_pages(unsigned int page, unsigned int amount) {
+    unsigned int i;
+
+    //loop through the number of pages
+    for(i = 0; i < amount; ++i)
+        //free each page individually
+        dealloc_page(page+i);
+}
+
+/**
  * Changes the page number ot a physical address (null *)
  *
  * @param page the page number to change to address

@@ -1,13 +1,23 @@
 #ifndef MMU_H
 #define MMU_H
 
+//#define MMU_ENABLE
+#ifdef MMU_ENABLE
+    #ifdef IO_ADDR
+        #undef IO_ADDR
+    #endif
+    #define IO_ADDR 0x3F000000
+#endif
+
 #define PAGE_SIZE           4096 //size of the pages to be used
 #define PAGE_SHIFT          12   //number of bits to shift for pages
 
 #define MMU_L1_ALIGN        0x4000 //16k alignment
 #define MMU_L2_ALIGN        0x0400 //1K  alignment
 
-#define PAT_ADDRESS         0x9000 //page allocation table address
+#define PAT_ADDRESS         0x00009000 //page allocation table address
+#define MMU_TEMP_MAP        0x3E000000 //when mapping a temporary page, use this address
+#define MMU_TEMP_L2_ADDR    0x0000A000 //temporary L2 table address
 
 #define MMU_L1_NOMAP_TYPE   0x0 //a none mapping to the second level of tables
 #define MMU_L1_COURSE_TYPE  0x1 //mapping to a course second level of tables
@@ -54,7 +64,8 @@ struct mmu_L2_4k_desc {
  - Next 4 pages (0x00004000 - 0x00007FFF) in memory is the Kernel L2 table for 16MB mapping of kernel memory
  - Next Page (0x00008000 - 0x00008FFF) in memory is the kernel L2 table for the i/o mapping
  - Next page (0x00009000 - 0x00009FFF) in memory is the page allocation table
- - Next 6 pages (0x0000A000 - 0x0000FFFF) in memory are completly free (24K)
+ - Next page (0x0000A000 - 0x0000AFFF) in memory is for temporary L2 table mapping
+ - Next 5 pages (0x0000B000 - 0x0000FFFF) in memory are completly free (20K)
 
  - I/O is changed to occupy just under user space (0x3F000000 - 0x3FFFFFFF)
    - getting mapped from 0x20000000 - 0x20FFFFFF
@@ -68,12 +79,12 @@ unsigned int alloc_page_align(unsigned int align); //allocates a page that is al
 unsigned int alloc_pages(unsigned int amount); //allocates a number of contiguous pages
 unsigned int alloc_pages_align(unsigned int amount, unsigned int align) //allocate number of continuous aigned pages
 void dealloc_page(unsigned int page); //frees a page to use
+void dealloc_pages(unsigned int page, unsigned int amount); //frees block of pages to use
 void * page_number_to_address(unsigned int page); //gets the physical memory address from the page number
 
 //mmu mapping routines
 void fill_page_with_empty_L1_table(unsigned int page); //fills a page with empty L1 table
 void fill_page_with_empty_L2_table(unsigned int page); //fills a page with empty L2 table
-void create_map(void * phys, void * virt); //creates a mapping from virt->phys address
 void create_map(void * phys, void * virt, unsigned int ap); //creates a mapping from virt->phys address
 void remove_map(void * virt); //removes the virtual address mapping
 void * get_phys_addr(void * virt); //does a software page walk to get the physcial address from a virtual one
