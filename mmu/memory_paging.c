@@ -69,13 +69,14 @@ unsigned int alloc_pages_align(unsigned int amount, unsigned int align) {
 
     //loop through until you find a page that is free
     for(ret = 0; ret < total_pages; ret += align) { //increasing by align ensures alignment
-        done = false;
+        done = 0; //set to false
         for(i = 0; i < amount; ++i) {
             index = ((ret + i) & 0xFFFFFFE0) >> 5;
             mask = (ret + i) & 0x1F;
             if((PAT[index] & mask) != 0)
                 break;
-            done = true;
+            if(i == amount - 1)
+                done = 1; //set to true
         }
         if(done)
             break;
@@ -83,7 +84,7 @@ unsigned int alloc_pages_align(unsigned int amount, unsigned int align) {
 
     //if there are no free pages of the correct alignment, return SYSERR
     if(ret >= total_pages)
-        return SYS_ERR;
+        return SYSERR;
 
     //allocate the page in the table
     for(i = 0; i < amount; ++i)

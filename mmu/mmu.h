@@ -74,10 +74,10 @@ struct mmu_L2_4k_desc {
 */
 
 //memory page routines
-unsigned int alloc_page(); //allocates a single page in the page allocation table
+unsigned int alloc_page(void); //allocates a single page in the page allocation table
 unsigned int alloc_page_align(unsigned int align); //allocates a page that is aligned to a certain number of pages
 unsigned int alloc_pages(unsigned int amount); //allocates a number of contiguous pages
-unsigned int alloc_pages_align(unsigned int amount, unsigned int align) //allocate number of continuous aigned pages
+unsigned int alloc_pages_align(unsigned int amount, unsigned int align); //allocate number of continuous aigned pages
 void dealloc_page(unsigned int page); //frees a page to use
 void dealloc_pages(unsigned int page, unsigned int amount); //frees block of pages to use
 void * page_number_to_address(unsigned int page); //gets the physical memory address from the page number
@@ -90,12 +90,12 @@ void remove_map(void * virt); //removes the virtual address mapping
 void * get_phys_addr(void * virt); //does a software page walk to get the physcial address from a virtual one
 
 //mmu routines
-void * get_page_table_addr(); //gets the addr of the currently used page table
-void * get_page_table_addr_phys(); //gets the physical address of the current page table
+void * get_page_table_addr(void); //gets the addr of the currently used page table
+void * get_page_table_addr_phys(void); //gets the physical address of the current page table
 void set_page_table_addr(void * table); //sets the addr of the page table to use
-void mmu_init(); //initializes the data for the mmu table
-void mmu_enable(); //enables the mmu
-void mmu_disable(); //disables the mmu
-bool mmu_is_enabled(); //determines if the mmu is enabled or not
+void mmu_init(void); //initializes the data for the mmu table
+void mmu_enable(void); //enables the mmu
+void mmu_disable(void); //disables the mmu
+unsigned int mmu_is_enabled(void); //determines if the mmu is enabled or not
 
 #endif
