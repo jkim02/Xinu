@@ -62,6 +62,7 @@ devcall uartWrite(device *devptr, void *buf, uint len)
         if (uartptr->oidle)
         {
             uartptr->oidle = FALSE;
+            //regptr->thr = *buffer++;
             regptr->dr = *buffer++;
             count++;
             uartptr->cout++;
