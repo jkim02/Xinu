@@ -58,11 +58,15 @@ struct mmu_L2_4k_desc {
 
  - I/O is changed to occupy just under user space (0x3F000000 - 0x3FFFFFFF)
    - getting mapped from 0x20000000 - 0x20FFFFFF
+
+ - 
 */
 
 //memory page routines
 unsigned int alloc_page(); //allocates a single page in the page allocation table
 unsigned int alloc_page_align(unsigned int align); //allocates a page that is aligned to a certain number of pages
+unsigned int alloc_pages(unsigned int amount); //allocates a number of contiguous pages
+unsigned int alloc_pages_align(unsigned int amount, unsigned int align) //allocate number of continuous aigned pages
 void dealloc_page(unsigned int page); //frees a page to use
 void * page_number_to_address(unsigned int page); //gets the physical memory address from the page number
 
@@ -70,11 +74,13 @@ void * page_number_to_address(unsigned int page); //gets the physical memory add
 void fill_page_with_empty_L1_table(unsigned int page); //fills a page with empty L1 table
 void fill_page_with_empty_L2_table(unsigned int page); //fills a page with empty L2 table
 void create_map(void * phys, void * virt); //creates a mapping from virt->phys address
+void create_map(void * phys, void * virt, unsigned int ap); //creates a mapping from virt->phys address
 void remove_map(void * virt); //removes the virtual address mapping
 void * get_phys_addr(void * virt); //does a software page walk to get the physcial address from a virtual one
 
 //mmu routines
 void * get_page_table_addr(); //gets the addr of the currently used page table
+void * get_page_table_addr_phys(); //gets the physical address of the current page table
 void set_page_table_addr(void * table); //sets the addr of the page table to use
 void mmu_init(); //initializes the data for the mmu table
 void mmu_enable(); //enables the mmu

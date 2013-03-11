@@ -7,9 +7,13 @@
  * @param page the page number to set as allocated
  */
 void set_page_alloc(unsigned int page) {
-    unsigned int * PAT = (unsigned int *)PAT_ADDRESS;
-    unsigned int mask = 1 << (page & 0x1F);
-    unsigned int index = (page & 0xFFFFFFE0) >> 5;
+    unsigned int * PAT;
+    unsigned int mask;
+    unsigned int index;
+
+    PAT = (unsigned int *)PAT_ADDRESS;
+    mask = 1 << (page & 0x1F);
+    index = (page & 0xFFFFFFE0) >> 5;
 
     PAT[index] |= mask;
 }
@@ -18,9 +22,13 @@ void set_page_alloc(unsigned int page) {
  * Sets the bit in the PAT as 0 to denote a deallocated page
  */
 void unset_page_alloc(unsigned int page) {
-    unsigned int * PAT = (unsigned int *)PAT_ADDRESS;
-    unsigned int mask = ~(1 << (page & 0x1F));
-    unsigned int index = (page & 0xFFFFFFE0) >> 5;
+    unsigned int * PAT;
+    unsigned int mask;
+    unsigned int index;
+
+    PAT = (unsigned int *)PAT_ADDRESS;
+    mask = ~(1 << (page & 0x1F));
+    index = (page & 0xFFFFFFE0) >> 5;
 
     PAT[index] &= mask;
 }
@@ -34,6 +42,14 @@ unsigned int alloc_page() {
     return alloc_page_align(1);
 }
 
+unsigned int alloc_page_align(unsigned int align) {
+    return alloc_pages_align(1,align);
+}
+
+unsigned int alloc_pages(unsigned int amount) {
+    return alloc_pages_align(amount,1);
+}
+
 /**
  * Allocates a single page aligned to a count of page boundries
  *
@@ -41,23 +57,37 @@ unsigned int alloc_page() {
  *
  * @return page number allocated in physical memory
  */
-unsigned int alloc_page_align(unsigned int align) {
+unsigned int alloc_pages_align(unsigned int amount, unsigned int align) {
     //TODO get the memory size in here
     unsigned int total_pages = 128*1024*1024/PAGE_SIZE; //get number of pages
     unsigned int ret; //the page number that gets returned
     unsigned int * PAT = (unsigned int *)PAT_ADDRESS; //the array of bits for allocated pages
+    unsigned int i;
+    unsigned int index;
+    unsigned int mask;
+    bool done;
 
     //loop through until you find a page that is free
-    for(ret = 0; ret < total_pages; ret += align) //increasing by align ensures alignment
-        if((PAT[(ret & 0xFFFFFFE0) >> 5] & (1 << (ret & 0x1F))) == 0)
+    for(ret = 0; ret < total_pages; ret += align) { //increasing by align ensures alignment
+        done = false;
+        for(i = 0; i < amount; ++i) {
+            index = ((ret + i) & 0xFFFFFFE0) >> 5;
+            mask = (ret + i) & 0x1F;
+            if((PAT[index] & mask) != 0)
+                break;
+            done = true;
+        }
+        if(done)
             break;
+    }
 
     //if there are no free pages of the correct alignment, return SYSERR
     if(ret >= total_pages)
         return SYS_ERR;
 
     //allocate the page in the table
-    set_page_alloc(ret);
+    for(i = 0; i < amount; ++i)
+        set_page_alloc(ret + i);
 
     //return the page number
     return ret;
