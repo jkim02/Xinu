@@ -1,0 +1,36 @@
+USB Road Map : EHCI For USB 2.0 (Not Implementing Isochronous)
+
+USB Request Blocks (URB):
+	struct usb_device *dev;		//Device the urb is sent to.
+	unsigned int pipe;				//Information about the endpoint in the target device.
+	int status;					//Transfer status.
+	unsigned int transfer_flags;	//Instructions for handling the urb.
+	void * transfer_buffer;		//Buffer storing transferred data. Must be created with kmalloc()?
+	dma_addr_t transfer_dma;		//Data transfer buffer when DMA is used.
+	int transfer_buffer_length;		//Transfer buffer length.
+	int actual_length;				//Actual length of data received or sent by the urb.
+	usb_complete_t complete;		//Completion handler called when the transfer is complete.
+	void *context;				//Data blob which can be used in the completion handler.
+	unsigned char *setup_packet; 	//(control urbs) Setup packet transferred before the data in the transfer buffer.
+	dma_addr_t setup_dma;		//(control urbs) Same, but when the setup packet is transferred with DMA.
+	int interval;					//(interrupt urbs) Urb polling interval.
+
+URB Prototype:
+	extern void usb_init_urb(struct urb *urb);	//urb allocator
+	extern struct urb *usb_alloc_urb();			//simplified urb allocator
+	extern void usb_free_urb(struct urb *urb);	//urb free'r
+
+Endpoints Implementation Order:
+	Control		- Required
+	Interrupt	- HID
+	Bulk			- Networking
+
+Pipes:
+	Control pipes		usb_[snd/rcv]ctrlpipe();
+	Bulk pipes		usb_[snd/rcv]bulkpipe();
+	Interrupt pipes	usb_[snd/rcv]intpipe();
+
+Pipe Prototype:
+	unsigned int usb_[snd/rcv][ctrl/bulk/int]pipe(struct usb_device *dev, unsigned int endpoint);
+
+
