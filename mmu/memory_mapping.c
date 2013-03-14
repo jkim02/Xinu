@@ -214,11 +214,19 @@ void * get_phys_addr(void * virt) {
     //get the L1 descriptor
     L1_desc = &(L1_table[((unsigned int)virt & 0xFFF00000) >> 20]);
 
+    //check L1 description to make sure it is valid
+    if(L1_desc->type == MMU_L1_NOMAP_TYPE)
+        return SYSERR;
+
     //get the L2 table
     L2_table = (struct mmu_L2_4k_desc *)(L1_desc->L2_base_addr << 10);
 
     //get the L2 descriptor
     L2_desc = &(L2_table[((unsigned int)virt & 0x000FF000) >> 12]);
+
+    //check L2 description to make sure it is valid
+    if(L2_desc->type == MMU_L2_NOMAP_TYPE)
+        return SYSERR;
 
     //return the physical address
     return (void *)((L2_desc->phy_base_addr << 12) | ((unsigned int)virt & 0x00000FFF));

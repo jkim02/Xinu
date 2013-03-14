@@ -74,6 +74,8 @@ struct mmu_L2_4k_desc {
 */
 
 //memory page routines
+void set_page_alloc(unsigned int page); //sets the bit in PAT for page as used
+void unset_page_alloc(unsigned int page); //sets the bit in PAT for the page as free
 unsigned int alloc_page(void); //allocates a single page in the page allocation table
 unsigned int alloc_page_align(unsigned int align); //allocates a page that is aligned to a certain number of pages
 unsigned int alloc_pages(unsigned int amount); //allocates a number of contiguous pages
@@ -83,6 +85,13 @@ void dealloc_pages(unsigned int page, unsigned int amount); //frees block of pag
 void * page_number_to_address(unsigned int page); //gets the physical memory address from the page number
 
 //mmu mapping routines
+unsigned int get_L1_index(void * addr); //gets the L1 index from a virtual memory address
+unsigned int get_L2_index(void * addr); //gets the L2 index from a virtual memory address
+void fill_L1_index(struct mmu_L1_4k_desc * table, unsigned int index, unsigned int type, unsigned int domain,
+                   unsigned int IMP, void * base_addr); //fills in an L1 description
+void fill_L2_index(struct mmu_L2_4k_desc * table, unsigned int index, unsigned int type, unsigned int bufferable,
+                   unsigned int cacheable, unsigned int ap, void * base_addr); //fills in an L2 description
+void fill_page_with_data(unsigned int page, void * data, unsigned int data_size); //fills page with repeating data
 void fill_page_with_empty_L1_table(unsigned int page); //fills a page with empty L1 table
 void fill_page_with_empty_L2_table(unsigned int page); //fills a page with empty L2 table
 void create_map(void * phys, void * virt, unsigned int ap); //creates a mapping from virt->phys address
