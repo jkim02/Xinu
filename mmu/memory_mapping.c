@@ -49,9 +49,17 @@ struct mmu_L1_4k_desc * get_L1_desc(void * addr) {
  */
 struct mmu_L2_4k_desc * get_L2_desc(void * addr) {
     struct mmu_L2_4k_desc * table;
+    struct mmu_L1_4k_desc * entry;
+
+    //get the L1 entry
+    entry = get_L1_entry(addr);
+
+    //if the L1 entry is no mapping, return SYSERR
+    if(entry->type == MMU_L1_NOMAP_TYPE)
+        return SYSERR;
 
     //get the page table address
-    table = (struct mmu_L2_4k_desc *)((void *)(get_L1_desc(addr)->L2_base_addr << 10));
+    table = (struct mmu_L2_4k_desc *)((void *)(entry->L2_base_addr << 10));
 
     //return the single L2 description
     return &(table[get_L2_index(addr)]);
@@ -120,9 +128,11 @@ void fill_page_with_data(unsigned int page, void * data, unsigned int data_size)
     L1_index = get_L1_index((void*)MMU_TEMP_MAP);
     L2_index = get_L2_index((void*)MMU_TEMP_MAP);
 
+    //get the L1 table and set the entry to map to the L2 base address
     L1_table = (struct mmu_L1_4k_desc *)get_page_table_addr();
     fill_L1_index(L1_table, L1_index, MMU_L1_COURSE_TYPE, 0, 0, (void*)MMU_TEMP_L2_ADDR);
     
+    //get the L2 table and set the entry to map to the physical base address
     L2_table = (struct mmu_L2_4k_desc *)(L1_table[L1_index].L2_base_addr << 10);
     fill_L2_index(L2_table, L2_index, MMU_L2_SMALL_TYPE, 0, 0, MMU_AP_USER_NONE, phys);
 
@@ -133,8 +143,8 @@ void fill_page_with_data(unsigned int page, void * data, unsigned int data_size)
             ((char *)MMU_TEMP_MAP)[data_size*i+j] = ((char *)data)[j];
 
     //remove the manual mapping from the mmu (done here!)
-    L2_table[L2_index].type = MMU_L2_NOMAP_TYPE;
-    L1_table[L1_index].type = MMU_L1_NOMAP_TYPE;
+    L2_table[L2_index].type = MMU_L2_NOMAP_TYPE; //set L2 entry to nomap
+    L1_table[L1_index].type = MMU_L1_NOMAP_TYPE; //set L1 entry to nomap
 }
 
 /**
@@ -187,6 +197,7 @@ void create_map(void * phys, void * virt, unsigned int ap) {
     void * virt_temp; //temporary virt address to check L1 table for entries
     unsigned int index; //index into a table
     struct mmu_L1_4k_desc * L1_table;
+    struct mmu_L2_4k_desc * L2_entry;
     unsigned int new_page;
     unsigned int i;
 
@@ -214,7 +225,15 @@ void create_map(void * phys, void * virt, unsigned int ap) {
         fill_page_with_empty_L2_table(new_page);
     }
 
-    //
+    //get the L2 entry
+    L2_entry = get_L2_entry(virt);
+
+    //set the L2 entry
+    L2_entry->phy_base_addr = ((unsigned int)phys) >> 12;
+    L2_entry->bufferable = 0;
+    L2_entry->cacheable = 0;
+    L2_entry->ap0 = L2_entry->ap1 = L2_entry->ap2 = L2_entry->ap3;
+    L2_entry->type = MMU_L2_SMALL_TYPE;
 }
 
 /**
@@ -223,6 +242,16 @@ void create_map(void * phys, void * virt, unsigned int ap) {
  * @param virt the virtual address to remove
  */
 void remove_map(void * virt) {
+    struct mmu_L2_4k_desc * entry;
+
+    //get the L2 desctription for this memory address
+    entry = get_L2_entry(virt);
+
+    //set the type to no mapping
+    entry->type = MMU_L2_NOMAP_TYPE;
+
+    //set the physical base address to 0 for safety reasons
+    entry->phy_base_addr = 0;
 }
 
 /**
