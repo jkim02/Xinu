@@ -87,6 +87,8 @@ void * page_number_to_address(unsigned int page); //gets the physical memory add
 //mmu mapping routines
 unsigned int get_L1_index(void * addr); //gets the L1 index from a virtual memory address
 unsigned int get_L2_index(void * addr); //gets the L2 index from a virtual memory address
+struct mmu_L1_4k_desc * get_L1_desc(void * addr); //gets the L1 description for the memory address
+struct mmu_L2_4k_desc * get_L2_desc(void * addr); //gets the L2 description for the memory address
 void fill_L1_index(struct mmu_L1_4k_desc * table, unsigned int index, unsigned int type, unsigned int domain,
                    unsigned int IMP, void * base_addr); //fills in an L1 description
 void fill_L2_index(struct mmu_L2_4k_desc * table, unsigned int index, unsigned int type, unsigned int bufferable,
