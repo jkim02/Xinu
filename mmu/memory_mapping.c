@@ -24,6 +24,40 @@ unsigned int get_L2_index(void * addr) {
 }
 
 /**
+ * Gets the L1 description for a virtual memory address
+ *
+ * @param addr the virtual memory address to look up
+ *
+ * @return L1 description for the given address
+ */
+struct mmu_L1_4k_desc * get_L1_desc(void * addr) {
+    struct mmu_L1_4k_desc * table;
+    
+    //get the page table address
+    table = (struct mmu_L1_4k_desc *)get_page_table_addr();
+
+    //return the single L1 description
+    return &(table[get_L1_index(addr)]);
+}
+
+/**
+ * Gets the L2 description for a virtual memory address
+ *
+ * @param addr the virtual memory address to look up
+ *
+ * @return L2 description for the given address
+ */
+struct mmu_L2_4k_desc * get_L2_desc(void * addr) {
+    struct mmu_L2_4k_desc * table;
+
+    //get the page table address
+    table = (struct mmu_L2_4k_desc *)((void *)(get_L1_desc(addr)->L2_base_addr << 10));
+
+    //return the single L2 description
+    return &(table[get_L2_index(addr)]);
+}
+
+/**
  * Fills a single entry inside of an L1 table
  *
  * @param table the L1 table to use, this needs to be already mapped into virtual memory space
