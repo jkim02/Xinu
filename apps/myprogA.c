@@ -48,9 +48,8 @@ return 0;
 }
 
 void callProg(){
-    int myprogA();
-
-
-    resume(create(myprogA,1024,20,"my proc 1",1));	
+//    int myprogA();
+//    resume(create(myprogA,1024,20,"my proc 1",1));	
+myprogA();
 
 }
