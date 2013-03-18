@@ -2,7 +2,7 @@
 #  Platform-specific Makefile definitions for the
 #  Embedded Xinu operating system.
 #
-#  Raspberry Pi ARM platform.
+#  Fluke ARM platform.
 #
 #  $Id: platformVars 2132 2009-11-17 23:22:38Z brylow $
 
@@ -54,10 +54,13 @@ OCFLAGS  = -I binary -O elf32-littlemips -B mips
 CPFLAGS = -O ihex
 
 # Embedded Xinu components to build into kernel image
-APPCOMPS  = apps mailbox shell # test network # mem
+APPCOMPS  = apps mailbox shell mmu # test network # mem
 
-DEVICES = loopback uart-pl011 tty
-
+DEVICES = loopback uart-pl011 tty #uart-ns16550 #uart-arm-qemu raw tty #uart-ns16550
+#DEVICES = loopback led tty uart-ns16550 #uart-arm-qemu raw tty #uart-ns16550
+# bcmbus bcm4713 flash \
+#		ethloop loopback raw tty uart-ns16550 \
+#		udp tcp http telnet
 DEVCOMPS  = ${DEVICES:%=device/%}
 
 all: ${BINFILE} ${HEXFILE}
