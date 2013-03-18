@@ -1,12 +1,12 @@
 #include "../system/platforms/raspberry-pi/gpio.h"
 #include <thread.h>
 void run_blinky(){
-resume(create(blinky_on(),1024,20,"OVERHOLT",0));
+    blinky_on();
 }
 
 void blinky_on(){
-GPIOMODE(16,FSEL_OUTPUT);
-GPIOCLR(16);
+    GPIOMODE(LED_PIN, FSEL_OUTPUT);
+    GPIOCLR(LED_PIN);
 }
 
 
