@@ -1,0 +1,20 @@
+#include <thread.h>
+
+
+int myfuncA(){
+ return 5;
+
+}
+
+int myProgA(){
+ myfuncA();
+
+}
+
+void callProg(){
+    int myProgA();
+
+
+    create(myProgA,1024,20,"my proc 1",1);	
+
+}

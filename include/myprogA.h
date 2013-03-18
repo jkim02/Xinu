@@ -1,0 +1,2 @@
+void myprogA();
+void myfuncA();
