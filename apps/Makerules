@@ -4,7 +4,7 @@
 COMP = apps
 
 # Source files for this component
-C_FILES = date.c rdate.c myprogA.c blinky.c blinky_off.c 
+C_FILES = date.c rdate.c myprogA.c blinky.c blinky_off.c printprocstks.c
 
 S_FILES =
 

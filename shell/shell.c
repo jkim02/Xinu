@@ -27,6 +27,7 @@ const struct centry commandtab[] = {
     {"myprogA",FALSE,xsh_myprogA},
     {"blink_on",FALSE,xsh_blinky},
     {"blink_off",FALSE,xsh_blinky_off},
+    {"printprocstks",FALSE,xsh_printprocstks},
 #if USE_TLB
     {"dumptlb", FALSE, xsh_dumptlb},
 #endif

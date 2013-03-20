@@ -62,6 +62,7 @@ shellcmd xsh_date(int, char *[]);
 shellcmd xsh_myprogA(int,char*[]);
 shellcmd xsh_blinky(int,char*[]);
 shellcmd xsh_blinky_off(int,char*[]);
+shellcmd xsh_printprocstks(int nargs, char *args[]);
 shellcmd xsh_ethstat(int, char *[]);
 shellcmd xsh_exit(int, char *[]);
 shellcmd xsh_flashstat(int, char *[]);
