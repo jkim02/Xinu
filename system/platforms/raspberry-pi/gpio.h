@@ -124,6 +124,7 @@
 #define GPPUDCLK_ADDR (GPIO_BASE_ADDR+0x98)
 #define GPPUDCLK0 __IO(GPPUDCLK_ADDR+0x00)
 #define GPPUDCLK1 __IO(GPPUDCLK_ADDR+0x04)
+#define LED_PIN 16
 /*******************************************************************************
  * Internal macros
  ******************************************************************************/
