@@ -27,6 +27,7 @@ Hopefully.
 void mmu_enable(void){
     asm(
         "mrc p15, 0, r0, c1, c0, 0\n"
+        //or with 0x1 to set LSB, after this MMU is turned on!
         "orr r0, r0, #0x1\n"
         "mcr p15, 0, r0, c1, c0, 0"
     );
@@ -39,7 +40,8 @@ Hopefully.
 void mmu_disable(void){
     asm(
         "mrc p15, 0, r0, c1, c0, 0\n"
-        "and r0, r0, #0x0\n"
+        //and with ~(0x1) to unset LSB, after this MMU is turned off!
+        "and r0, r0, #0xFFFFFFFE\n"
         "mcr p15, 0, r0, c1, c0, 0\n"
     );
 }
