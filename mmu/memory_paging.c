@@ -15,6 +15,8 @@ void set_page_alloc(unsigned int page) {
     mask = 1 << (page & 0x1F);
     index = (page & 0xFFFFFFE0) >> 5;
 
+    //TODO get current process, change its PAT
+
     PAT[index] |= mask;
 }
 
@@ -29,6 +31,8 @@ void unset_page_alloc(unsigned int page) {
     PAT = (unsigned int *)PAT_ADDRESS;
     mask = ~(1 << (page & 0x1F));
     index = (page & 0xFFFFFFE0) >> 5;
+
+    //TODO get current process, change its PAT
 
     PAT[index] &= mask;
 }
