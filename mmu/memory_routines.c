@@ -17,7 +17,7 @@ void mmu_enable(void){
     orr r0, r0, #0x1
     mcr p15, 0, r0, c1, c0, 0
     ");
-
+    MMU_ON=1;
 }
 
 /**
@@ -31,7 +31,7 @@ asm("
     mcr p15, 0, r0, c1, c0, 0
 
     ");
-
+    MMU_OFF=0;
 }
 
 void mmu_init(void){
