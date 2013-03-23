@@ -101,7 +101,7 @@ unsigned int alloc_pages_align(unsigned int amount, unsigned int align) {
  */
 void dealloc_page(unsigned int page) {
     //check to see if page is outside of physical memory
-    if(page_number_to_address(page) == SYSERR)
+    if((int)page_number_to_address(page) == SYSERR)
         return;
 
     //free the page in the PAT
@@ -132,12 +132,12 @@ void dealloc_pages(unsigned int page, unsigned int amount) {
  */
 void * page_number_to_address(unsigned int page) {
     //calculate base memory address of the page
-    void * mem = PAGE_SIZE << PAGE_SHIFT;
+    void * mem = (void *)(PAGE_SIZE << PAGE_SHIFT);
 
     //check against the size of the memory
     //TODO used constant for memory size
     if(((unsigned int)mem) >= 128*1024*1024)
-        return SYSERR;
+        return (void *)SYSERR;
 
     //return the memory address
     return mem;

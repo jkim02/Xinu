@@ -52,11 +52,11 @@ struct mmu_L2_4k_desc * get_L2_desc(void * addr) {
     struct mmu_L1_4k_desc * entry;
 
     //get the L1 entry
-    entry = get_L1_entry(addr);
+    entry = get_L1_desc(addr);
 
     //if the L1 entry is no mapping, return SYSERR
     if(entry->type == MMU_L1_NOMAP_TYPE)
-        return SYSERR;
+        return (void *)SYSERR;
 
     //get the page table address
     table = (struct mmu_L2_4k_desc *)((void *)(entry->L2_base_addr << 10));
@@ -226,7 +226,7 @@ void create_map(void * phys, void * virt, unsigned int ap) {
     }
 
     //get the L2 entry
-    L2_entry = get_L2_entry(virt);
+    L2_entry = get_L2_desc(virt);
 
     //set the L2 entry
     L2_entry->phy_base_addr = ((unsigned int)phys) >> 12;
@@ -245,7 +245,7 @@ void remove_map(void * virt) {
     struct mmu_L2_4k_desc * entry;
 
     //get the L2 desctription for this memory address
-    entry = get_L2_entry(virt);
+    entry = get_L2_desc(virt);
 
     //set the type to no mapping
     entry->type = MMU_L2_NOMAP_TYPE;
@@ -279,7 +279,7 @@ void * get_phys_addr(void * virt) {
 
     //check L1 description to make sure it is valid
     if(L1_desc->type == MMU_L1_NOMAP_TYPE)
-        return SYSERR;
+        return (void *)SYSERR;
 
     //get the L2 table
     L2_table = (struct mmu_L2_4k_desc *)(L1_desc->L2_base_addr << 10);
@@ -289,7 +289,7 @@ void * get_phys_addr(void * virt) {
 
     //check L2 description to make sure it is valid
     if(L2_desc->type == MMU_L2_NOMAP_TYPE)
-        return SYSERR;
+        return (void *)SYSERR;
 
     //return the physical address
     return (void *)((L2_desc->phy_base_addr << 12) | ((unsigned int)virt & 0x00000FFF));

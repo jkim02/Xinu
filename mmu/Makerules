@@ -3,7 +3,7 @@
 # Name of this component (the directory this file is stored in)
 COMP = mmu
 
-FILES = memory_paging.c memory_mapping.c
+FILES = memory_paging.c memory_mapping.c memory_routines.c
 
 # Add the files to the compile source path
 DIR = ${TOPDIR}/${COMP}
