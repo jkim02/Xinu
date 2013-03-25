@@ -51,5 +51,10 @@ void mmu_init(void){
 }
 
 unsigned int mmu_is_enabled(void){
-    return SYSERR;
+    asm("mrc p15, 0, r0, c1, c0, 0");
+    register int r0 asm("r0");
+
+    unsigned int * mmu = r0;
+
+    return *mmu;
 }
